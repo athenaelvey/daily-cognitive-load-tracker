@@ -1,3 +1,15 @@
-daily_log.csv
+# Byte-compiled / optimized / DLL files
 __pycache__/
-*.pyc
+*.py[codz]
+*$py.class
+
+# Local data files (your app)
+daily_log.csv
+
+# Environments
+.venv/
+env/
+venv/
+
+# Streamlit secrets
+.streamlit/secrets.toml
