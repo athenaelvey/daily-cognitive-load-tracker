@@ -27,14 +27,17 @@ logged_days = sorted(df2["Date"].dt.date.unique())
 
 today = dt.date.today()
 streak = 0
-day = 0
+day = today
+
+if len(logged_days) == 0:
+    st.info("Welcome! Log your first entry to start a streak!")
 
 while day in logged_days:
     streak += 1
-    day = day - timedelta(days = 1)
+    day = day - dt.timedelta(days = 1)
 
 if streak == 0:
-    st.info("You lost your streak... let's log an entry today to get it back up!")
+    st.info("No entry logged today... let's log an entry today to the streak back up!")
 else:
     st.success(f"🔥 You’re on a **{streak}-day streak**! Amazing consistency!")
 
