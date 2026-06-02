@@ -150,9 +150,6 @@ stress_rolling_vis = alt.Chart(df2).mark_line().encode(
     x = 'Date:T',
     y = 'stress_rolling:Q',
     color = alt.value('#990000')
-
-).properties(
-    title="Stress Rolling"
 )
 
 stress_comb = stress_chart + stress_rolling_vis
@@ -185,10 +182,6 @@ energy_rolling_vis = alt.Chart(df2).mark_line().encode(
     x = 'Date:T',
     y = 'energy_rolling:Q',
     color = alt.value('#c28a30')
-
-).properties(
-    title="Energy Rolling"
-
 )
 
 energy_comb = energy_chart + energy_rolling_vis
@@ -222,9 +215,6 @@ focus_rolling_vis = alt.Chart(df2).mark_line().encode(
     x = 'Date:T',
     y = 'focus_rolling:Q',
     color = alt.value('#c95f00')
-
-).properties(
-    title="Focus Rolling"
 )
 
 focus_comb = focus_chart + focus_rolling_vis
