@@ -2,6 +2,7 @@ import streamlit as st
 import datetime as dt
 import pandas as pd
 import altair as alt
+import numpy as np
 import os
 
 st.set_page_config(
@@ -99,6 +100,29 @@ if st.button("💾 Save Entry"):
 df2 = pd.read_csv(csv_file)
 df2["Date"] = pd.to_datetime(df2["Date"])
 
+df2['day_num'] = range(len(df2))
+
+stress_fit = np.polyfit(df2['day_num'], df2['Stress'],1)
+
+stress_slope = stress_fit[0]
+stress_intercept = stress_fit[1]
+
+df2['stress_trend'] = stress_slope * df2['day_num'] + stress_intercept
+
+energy_fit = np.polyfit(df2['day_num'], df2['Energy'],1)
+
+energy_slope = energy_fit[0]
+energy_intercept = energy_fit[1]
+
+df2['energy_trend'] = energy_slope * df2['day_num'] + energy_intercept
+
+focus_fit = np.polyfit(df2['day_num'], df2['Focus'], 1)
+
+focus_slope = focus_fit[0]
+focus_intercept = focus_fit[1]
+
+df2['focus_trend'] = focus_slope * df2['day_num'] + focus_intercept
+
 df2 = df2.drop_duplicates(subset=["Date"], keep="first")
 
 df2.to_csv(csv_file, index=False)
@@ -113,7 +137,7 @@ while day in logged_days:
     day = day - dt.timedelta(days = 1)
 
 if streak == 0 and len(logged_days) > 0:
-    st.info("No entry logged today... let's log an entry today to the streak back up!")
+    st.info("No entry logged today... let's log an entry today to get the streak back up!")
 else:
     st.success(f"🔥 You’re on a **{streak}-day streak**! Amazing consistency!")
 
@@ -131,10 +155,6 @@ col1, col2, col3 = st.columns(3)
 
 week = df2[df2['Date'] >= (df2['Date'].max() - pd.Timedelta(days=6))]
 
-df2['focus_rolling'] = df2['Focus'].rolling(7, min_periods = 1).mean()
-df2['energy_rolling'] = df2['Energy'].rolling(7, min_periods = 1).mean()
-df2['stress_rolling'] = df2['Stress'].rolling(7, min_periods = 1).mean()
-
 stress_chart = alt.Chart(df2).mark_line(point=True).encode(
     x = 'Date:T',
     y = 'Stress:Q',
@@ -146,13 +166,13 @@ stress_chart = alt.Chart(df2).mark_line(point=True).encode(
     title="Stress"
 )
 
-stress_rolling_vis = alt.Chart(df2).mark_line().encode(
+stress_trend_vis = alt.Chart(df2).mark_line().encode(
     x = 'Date:T',
-    y = 'stress_rolling:Q',
+    y = 'stress_trend:Q',
     color = alt.value('#990000')
 )
 
-stress_comb = stress_chart + stress_rolling_vis
+stress_comb = stress_chart + stress_trend_vis
 avg_stress_week = week['Stress'].mean()
 avg_stress_total = df2['Stress'].mean()
 
@@ -178,13 +198,13 @@ energy_chart = alt.Chart(df2).mark_line(point=True).encode(
     title="Energy"
 )
 
-energy_rolling_vis = alt.Chart(df2).mark_line().encode(
+energy_trend_vis = alt.Chart(df2).mark_line().encode(
     x = 'Date:T',
-    y = 'energy_rolling:Q',
+    y = 'energy_trend:Q',
     color = alt.value('#c28a30')
 )
 
-energy_comb = energy_chart + energy_rolling_vis
+energy_comb = energy_chart + energy_trend_vis
 avg_energy_week = week['Energy'].mean()
 avg_energy_total = df2['Energy'].mean()
 
@@ -211,13 +231,13 @@ focus_chart = alt.Chart(df2).mark_line(point=True).encode(
     title="Focus"
 )
 
-focus_rolling_vis = alt.Chart(df2).mark_line().encode(
+focus_trend_vis = alt.Chart(df2).mark_line().encode(
     x = 'Date:T',
-    y = 'focus_rolling:Q',
+    y = 'focus_trend:Q',
     color = alt.value('#c95f00')
 )
 
-focus_comb = focus_chart + focus_rolling_vis
+focus_comb = focus_chart + focus_trend_vis
 avg_focus_week = week['Focus'].mean()
 avg_focus_total = df2['Focus'].mean()
 
