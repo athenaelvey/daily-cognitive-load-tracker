@@ -12,6 +12,9 @@ A Streamlit-based cognitive wellness tracker designed to analyze focus, stress, 
 - Interactive line charts for visualizing each metric  
 - Trend visualization across days  
 - Optional raw data viewer for transparency  
+- Streak tracking for consistent daily logging
+- Alert system for unusual patterns 
+- Adaptive warning and encouraging messages
 
 ---
 
@@ -21,6 +24,7 @@ A Streamlit-based cognitive wellness tracker designed to analyze focus, stress, 
 - Streamlit  
 - Pandas  
 - Altair  
+- Numpy
 - Standard Python libraries (datetime, os)  
 
 ---
@@ -42,11 +46,7 @@ A Streamlit-based cognitive wellness tracker designed to analyze focus, stress, 
 ---
 
 ## Future Improvements
-
-- Add rolling averages to smooth trend analysis  
-- Implement streak tracking for consistent daily logging  
-- Introduce milestone badges for engagement (3, 7, 30 days)  
-- Add alert system for unusual stress or focus patterns  
+  
 - Expand analytics with correlations between metrics  
 - Add data export options (CSV / PDF reports)  
 - Improve UI layout and visual design consistency  
