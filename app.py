@@ -256,3 +256,12 @@ st.markdown("---")
 
 if st.checkbox("📄 Show raw data"):
     st.dataframe(df2)
+
+csv_data = df2.to_csv(index = False)
+
+st.download_button(
+    label = "📥 Download CSV",
+    data = csv_data,
+    file_name = "daily_log.csv",
+    mime = "text/csv"
+)
