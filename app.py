@@ -15,6 +15,11 @@ st.title("Daily Cognitive Load Tracker")
 
 csv_file = "daily_log.csv"
 
+backup_folder = "backups"
+
+if not os.path.exists(backup_folder):
+    os.makedirs(backup_folder)
+
 if os.path.exists(csv_file):
     df2 = pd.read_csv(csv_file)
 
@@ -95,6 +100,12 @@ if st.button("💾 Save Entry"):
 
     else:
         df.to_csv(csv_file, mode="a", header=False, index=False)
+        
+        backup_name = f"daily_log_{today}.csv"
+        backup_path = os.path.join(backup_folder, backup_name)
+
+        df2.to_csv(backup_path, index = False)
+
         st.success("✅ Your entry was saved!")
 
 df2 = pd.read_csv(csv_file)
