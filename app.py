@@ -53,13 +53,13 @@ if len(last_3) >= 3:
     energy_trend = energy[0] > energy[1] > energy[2]
 
     if stress_trend:
-        alerts.append("Stress has been increasing over the last few days.")
+        alerts.append("Take a breather! Stress has been increasing over the last few days.")
 
     if focus_trend:
-        alerts.append("Focus has been declining recently.")
+        alerts.append("Try something new, Focus has been declining recently.")
 
     if energy_trend:
-        alerts.append("Energy levels have been trending downward over recent days.")
+        alerts.append("Spend some time resetting. Energy levels have been trending downward over recent days.")
 
 if len(alerts) > 0:
     for alert in alerts:
@@ -93,7 +93,7 @@ df = pd.DataFrame([entry], columns = ["Date", "Time", "Focus", "Energy", "Stress
 today = dt.date.today()
 
 if st.button("💾 Save Entry"):
-    st.caption("Entries are saved once a day.")
+    st.caption("Entries are saved once a day")
     
     if today in df2["Date"].values:
         st.warning("You’ve already logged an entry for today! ✅")
@@ -259,7 +259,7 @@ with col3:
     if avg_focus_week > avg_focus_total:
         st.success("Focus is high for this week! Why don't we work on a to-do list? Get some studying down?")
     elif avg_focus_week < avg_focus_total:
-        st.info("Focus is down for now, clear your mind and try some relaxing exercises")
+        st.info("Focus is down for now, clear your mind and try some relaxing exercises.")
     else:
         st.info("Focus is steady this week, try not to fall behind on any work !")
 
@@ -267,6 +267,66 @@ st.markdown("---")
 
 if st.checkbox("📄 Show raw data"):
     st.dataframe(df2)
+
+if st.button("📊 Generate Weekly Report"):
+    st.write("Weekly Report")
+    
+    avg_focus = week['Focus'].mean()
+    avg_energy = week['Energy'].mean()
+    avg_stress = week['Stress'].mean()
+
+    st.write(f"Average Focus: {avg_focus:.1f}")
+    st.write(f"Average Energy: {avg_energy:.1f}")
+    st.write(f"Average Stress: {avg_stress:.1f}")
+
+    focus_pos = False
+    stress_pos = False
+    energy_pos = False
+
+
+    if avg_focus > avg_focus_total:
+        st.write(f"Focus vs Overall: ↑")
+        focus_pos = True
+    else:
+        st.write(f"Focus vs Overall: ↓")
+    
+    if avg_energy > avg_energy_total:
+        st.write(f"Energy vs Overall: ↑")
+        energy_pos = True
+    else:
+        st.write(f"Energy vs Overall: ↓")
+
+    if avg_stress < avg_stress_total:
+        st.write(f"Stress vs Overall: ↓")
+        stress_pos = True
+    else:
+        st.write(f"Stress vs Overall: ↑")
+
+    if focus_pos and energy_pos and stress_pos:
+        st.success("Excellent week! Focus and energy were above your usual levels while stress remained lower than normal.")
+
+    elif focus_pos and energy_pos:
+        st.success("Strong week! Focus and energy both improved compared to your overall averages.")
+
+    elif focus_pos and stress_pos:
+        st.success("Nice work! Focus improved while stress stayed lower than your usual levels.")
+
+    elif energy_pos and stress_pos:
+        st.success("Nice work! Energy was higher than usual and stress was kept under control.")
+
+    elif focus_pos:
+        st.info("Focus was stronger than usual this week. Try that strategy more often!")
+
+    elif energy_pos:
+        st.info("Energy levels were above your normal average this week. Ample sleep and hydration can maintain that!")
+
+    elif stress_pos:
+        st.info("Stress was lower than your typical level this week. Take advantage of this tranquility")
+
+    else:
+        st.warning("This week appears to have been more challenging than usual. Focus and energy were lower while stress was higher than your typical averages. Next week is a fresh start.")
+
+st.markdown("---")
 
 csv_data = df2.to_csv(index = False)
 
