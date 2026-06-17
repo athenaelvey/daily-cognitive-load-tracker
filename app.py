@@ -182,9 +182,10 @@ stress_chart = alt.Chart(df2).mark_line().encode(
 
 stress_trend_vis = alt.Chart(df2).mark_line().encode(
     x = 'Date:T',
-    y=alt.Y(
+    y = alt.Y(
     'stress_trend:Q',
-    scale=alt.Scale(domain=[0,15])
+    title='Stress',
+    scale=alt.Scale(domain=[0, 15])
 ),
     color = alt.value('#990000')
 )
@@ -224,6 +225,7 @@ energy_trend_vis = alt.Chart(df2).mark_line().encode(
     x = 'Date:T',
     y=alt.Y(
     'energy_trend:Q',
+    title = 'Energy',
     scale=alt.Scale(domain=[0,15])
 ),
     color = alt.value('#c28a30')
@@ -263,8 +265,9 @@ focus_chart = alt.Chart(df2).mark_line().encode(
 
 focus_trend_vis = alt.Chart(df2).mark_line().encode(
     x = 'Date:T',
-    y = y=alt.Y(
+    y=alt.Y(
     'focus_trend:Q',
+    title = 'Focus',
     scale=alt.Scale(domain=[0,15])
 ),
     color = alt.value('#c95f00')
