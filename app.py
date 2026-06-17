@@ -166,9 +166,12 @@ col1, col2, col3 = st.columns(3)
 
 week = df2[df2['Date'] >= (df2['Date'].max() - pd.Timedelta(days=6))]
 
-stress_chart = alt.Chart(df2).mark_line(point=True).encode(
+stress_chart = alt.Chart(df2).mark_line().encode(
     x = 'Date:T',
-    y = 'Stress:Q',
+    y=alt.Y(
+    'Stress:Q',
+    scale=alt.Scale(domain=[0,15])
+),
     color = alt.Color('Stress:Q',
                     scale=alt.Scale(domain=[df2['Stress'].min(),df2['Stress'].max()],
                                     range=['#ffd6d6','#ff0000']),
@@ -179,11 +182,16 @@ stress_chart = alt.Chart(df2).mark_line(point=True).encode(
 
 stress_trend_vis = alt.Chart(df2).mark_line().encode(
     x = 'Date:T',
-    y = 'stress_trend:Q',
+    y=alt.Y(
+    'stress_trend:Q',
+    scale=alt.Scale(domain=[0,15])
+),
     color = alt.value('#990000')
 )
 
-stress_comb = stress_chart + stress_trend_vis
+stress_comb = (stress_chart + stress_trend_vis).resolve_scale(
+    y='shared'
+)
 avg_stress_week = week['Stress'].mean()
 avg_stress_total = df2['Stress'].mean()
 
@@ -198,9 +206,12 @@ with col1:
         st.info("Stress is constant this week, let's see if we can lower it.")
 
 
-energy_chart = alt.Chart(df2).mark_line(point=True).encode(
+energy_chart = alt.Chart(df2).mark_line().encode(
     x = 'Date:T',
-    y = 'Energy:Q',
+    y=alt.Y(
+    'Energy:Q',
+    scale=alt.Scale(domain=[0,15])
+),
     color = alt.Color('Energy:Q',
                     scale=alt.Scale(domain=[df2['Energy'].min(),df2['Energy'].max()],
                                     range=['#ebe5d5','#ffd59a']),
@@ -211,11 +222,16 @@ energy_chart = alt.Chart(df2).mark_line(point=True).encode(
 
 energy_trend_vis = alt.Chart(df2).mark_line().encode(
     x = 'Date:T',
-    y = 'energy_trend:Q',
+    y=alt.Y(
+    'energy_trend:Q',
+    scale=alt.Scale(domain=[0,15])
+),
     color = alt.value('#c28a30')
 )
 
-energy_comb = energy_chart + energy_trend_vis
+energy_comb = (energy_chart + energy_trend_vis).resolve_scale(
+    y='shared'
+)
 avg_energy_week = week['Energy'].mean()
 avg_energy_total = df2['Energy'].mean()
 
@@ -231,9 +247,12 @@ with col2:
         st.info("Energy is staying stagnant, make sure you don't overdo it!")
 
 
-focus_chart = alt.Chart(df2).mark_line(point=True).encode(
+focus_chart = alt.Chart(df2).mark_line().encode(
     x = 'Date:T',
-    y = 'Focus:Q',
+    y=alt.Y(
+    'Focus:Q',
+    scale=alt.Scale(domain=[0,15])
+),
     color = alt.Color('Focus:Q',
                     scale=alt.Scale(domain=[df2['Focus'].min(),df2['Focus'].max()],
                                     range=['#f9e076','#fa8128']),
@@ -244,11 +263,16 @@ focus_chart = alt.Chart(df2).mark_line(point=True).encode(
 
 focus_trend_vis = alt.Chart(df2).mark_line().encode(
     x = 'Date:T',
-    y = 'focus_trend:Q',
+    y = y=alt.Y(
+    'focus_trend:Q',
+    scale=alt.Scale(domain=[0,15])
+),
     color = alt.value('#c95f00')
 )
 
-focus_comb = focus_chart + focus_trend_vis
+focus_comb = (focus_chart + focus_trend_vis).resolve_scale(
+    y='shared'
+)
 avg_focus_week = week['Focus'].mean()
 avg_focus_total = df2['Focus'].mean()
 
