@@ -166,7 +166,14 @@ col1, col2, col3 = st.columns(3)
 
 week = df2[df2['Date'] >= (df2['Date'].max() - pd.Timedelta(days=6))]
 
-stress_chart = alt.Chart(df2).mark_line().encode(
+if len(df2) < 20:
+    chart_data = df2[
+        df2["Date"] >= (df2["Date"].max() - pd.Timedelta(days=90))
+    ]
+else:
+    chart_data = df2
+
+stress_chart = alt.Chart(chart_data).mark_line(point = True).encode(
     x = 'Date:T',
     y=alt.Y(
     'Stress:Q',
@@ -180,7 +187,7 @@ stress_chart = alt.Chart(df2).mark_line().encode(
     title="Stress"
 )
 
-stress_trend_vis = alt.Chart(df2).mark_line().encode(
+stress_trend_vis = alt.Chart(chart_data).mark_line().encode(
     x = 'Date:T',
     y = alt.Y(
     'stress_trend:Q',
@@ -207,7 +214,7 @@ with col1:
         st.info("Stress is constant this week, let's see if we can lower it.")
 
 
-energy_chart = alt.Chart(df2).mark_line().encode(
+energy_chart = alt.Chart(chart_data).mark_line(point = True).encode(
     x = 'Date:T',
     y=alt.Y(
     'Energy:Q',
@@ -221,7 +228,7 @@ energy_chart = alt.Chart(df2).mark_line().encode(
     title="Energy"
 )
 
-energy_trend_vis = alt.Chart(df2).mark_line().encode(
+energy_trend_vis = alt.Chart(chart_data).mark_line().encode(
     x = 'Date:T',
     y=alt.Y(
     'energy_trend:Q',
@@ -249,7 +256,7 @@ with col2:
         st.info("Energy is staying stagnant, make sure you don't overdo it!")
 
 
-focus_chart = alt.Chart(df2).mark_line().encode(
+focus_chart = alt.Chart(chart_data).mark_line(point = True).encode(
     x = 'Date:T',
     y=alt.Y(
     'Focus:Q',
@@ -263,7 +270,7 @@ focus_chart = alt.Chart(df2).mark_line().encode(
     title="Focus"
 )
 
-focus_trend_vis = alt.Chart(df2).mark_line().encode(
+focus_trend_vis = alt.Chart(chart_data).mark_line().encode(
     x = 'Date:T',
     y=alt.Y(
     'focus_trend:Q',
