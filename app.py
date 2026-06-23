@@ -160,18 +160,32 @@ elif streak >= 30:
 elif streak >= 7:
     st.markdown("🎉 **7-Day Streak**")
 
-st.subheader("Wellness Trends")
+title_col, filter_col = st.columns([4,1])
+
+with title_col:
+    st.subheader("Wellness Trends")
+
+with filter_col:
+    date_filter = st.selectbox(
+        "View",
+        ["Default", "Last 30 Days", "Last 90 Days", "All Time"]
+    )
+
+if date_filter == "Default":
+    chart_data = df2.tail(20)
+
+elif date_filter == "Last 30 Days":
+    chart_df = df2[df2['Date'] >= (dt.datetime.now() - pd.Timedelta(days=30))]
+
+elif date_filter == "Last 90 Days":
+    chart_df = df2[df2['Date'] >= (dt.datetime.now() - pd.Timedelta(days = 90))]
+
+else:
+    chart_df = df2
 
 col1, col2, col3 = st.columns(3)
 
 week = df2[df2['Date'] >= (df2['Date'].max() - pd.Timedelta(days=6))]
-
-if len(df2) < 20:
-    chart_data = df2[
-        df2["Date"] >= (df2["Date"].max() - pd.Timedelta(days=90))
-    ]
-else:
-    chart_data = df2
 
 stress_chart = alt.Chart(chart_data).mark_line(point = True).encode(
     x = 'Date:T',
@@ -299,74 +313,76 @@ with col3:
 
 st.markdown("---")
 
-if st.checkbox("📄 Show raw data"):
-    st.dataframe(df2)
+raw, weekly, download = st.columns(3)
 
-if st.button("📊 Generate Weekly Report"):
-    st.write("Weekly Report")
-    
-    avg_focus = week['Focus'].mean()
-    avg_energy = week['Energy'].mean()
-    avg_stress = week['Stress'].mean()
+with raw:
+    if st.checkbox("📄 Show raw data"):
+        st.dataframe(df2)
 
-    st.write(f"Average Focus: {avg_focus:.1f}")
-    st.write(f"Average Energy: {avg_energy:.1f}")
-    st.write(f"Average Stress: {avg_stress:.1f}")
+with weekly:
+    if st.button("📊 Generate Weekly Report"):
+        st.write("Weekly Report")
+        
+        avg_focus = week['Focus'].mean()
+        avg_energy = week['Energy'].mean()
+        avg_stress = week['Stress'].mean()
 
-    focus_pos = False
-    stress_pos = False
-    energy_pos = False
+        st.write(f"Average Focus: {avg_focus:.1f}")
+        st.write(f"Average Energy: {avg_energy:.1f}")
+        st.write(f"Average Stress: {avg_stress:.1f}")
 
+        focus_pos = False
+        stress_pos = False
+        energy_pos = False
 
-    if avg_focus > avg_focus_total:
-        st.write(f"Focus vs Overall: ↑")
-        focus_pos = True
-    else:
-        st.write(f"Focus vs Overall: ↓")
-    
-    if avg_energy > avg_energy_total:
-        st.write(f"Energy vs Overall: ↑")
-        energy_pos = True
-    else:
-        st.write(f"Energy vs Overall: ↓")
+        if avg_focus > avg_focus_total:
+            st.write("Focus vs Overall: ↑")
+            focus_pos = True
+        else:
+            st.write("Focus vs Overall: ↓")
+        
+        if avg_energy > avg_energy_total:
+            st.write("Energy vs Overall: ↑")
+            energy_pos = True
+        else:
+            st.write("Energy vs Overall: ↓")
 
-    if avg_stress < avg_stress_total:
-        st.write(f"Stress vs Overall: ↓")
-        stress_pos = True
-    else:
-        st.write(f"Stress vs Overall: ↑")
+        if avg_stress < avg_stress_total:
+            st.write("Stress vs Overall: ↓")
+            stress_pos = True
+        else:
+            st.write("Stress vs Overall: ↑")
 
-    if focus_pos and energy_pos and stress_pos:
-        st.success("Excellent week! Focus and energy were above your usual levels while stress remained lower than normal.")
+        if focus_pos and energy_pos and stress_pos:
+            st.success("Excellent week! Focus and energy were above your usual levels while stress remained lower than normal.")
 
-    elif focus_pos and energy_pos:
-        st.success("Strong week! Focus and energy both improved compared to your overall averages.")
+        elif focus_pos and energy_pos:
+            st.success("Strong week! Focus and energy both improved compared to your overall averages.")
 
-    elif focus_pos and stress_pos:
-        st.success("Nice work! Focus improved while stress stayed lower than your usual levels.")
+        elif focus_pos and stress_pos:
+            st.success("Nice work! Focus improved while stress stayed lower than your usual levels.")
 
-    elif energy_pos and stress_pos:
-        st.success("Nice work! Energy was higher than usual and stress was kept under control.")
+        elif energy_pos and stress_pos:
+            st.success("Nice work! Energy was higher than usual and stress was kept under control.")
 
-    elif focus_pos:
-        st.info("Focus was stronger than usual this week. Try that strategy more often!")
+        elif focus_pos:
+            st.info("Focus was stronger than usual this week. Try that strategy more often!")
 
-    elif energy_pos:
-        st.info("Energy levels were above your normal average this week. Ample sleep and hydration can maintain that!")
+        elif energy_pos:
+            st.info("Energy levels were above your normal average this week. Ample sleep and hydration can maintain that!")
 
-    elif stress_pos:
-        st.info("Stress was lower than your typical level this week. Take advantage of this tranquility")
+        elif stress_pos:
+            st.info("Stress was lower than your typical level this week. Take advantage of this tranquility")
 
-    else:
-        st.warning("This week appears to have been more challenging than usual. Focus and energy were lower while stress was higher than your typical averages. Next week is a fresh start.")
+        else:
+            st.warning("This week appears to have been more challenging than usual. Focus and energy were lower while stress was higher than your typical averages. Next week is a fresh start.")
 
-st.markdown("---")
+with download:
+    csv_data = df2.to_csv(index=False)
 
-csv_data = df2.to_csv(index = False)
-
-st.download_button(
-    label = "📥 Download CSV",
-    data = csv_data,
-    file_name = "daily_log.csv",
-    mime = "text/csv"
-)
+    st.download_button(
+        label="📥 Download CSV",
+        data=csv_data,
+        file_name="daily_log.csv",
+        mime="text/csv"
+    )
