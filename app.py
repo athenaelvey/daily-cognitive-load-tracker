@@ -29,9 +29,6 @@ else:
 
 df2["Date"] = pd.to_datetime(df2["Date"])
 
-has_data = len(df2) > 0
-has_trend = len(df2) >= 2
-
 logged_days = sorted(df2["Date"].dt.date.unique())
 
 today = dt.date.today()
@@ -45,7 +42,7 @@ last_3 = df2.sort_values("Date").tail(3)
 
 alerts = []
 
-if len(last_3) >= 3:
+if len(last_3) == 3:
 
     stress = last_3["Stress"].tolist()
     focus = last_3["Focus"].tolist()
@@ -64,7 +61,7 @@ if len(last_3) >= 3:
     if energy_trend:
         alerts.append("Spend some time resetting. Energy levels have been trending downward over recent days.")
 
-if len(alerts) > 0:
+if alerts:
     for alert in alerts:
         st.info(alert)
 
@@ -74,19 +71,19 @@ focus = st.slider("How are your focus levels today?", 1, 10)
 
 st.write("Focus Levels: ", focus)
 
-st.markdown("---");
+st.markdown("---")
 
 energy = st.slider("How energized do you feel today?", 1, 10)
 
 st.write("Energy Levels: ", energy)
 
-st.markdown("---");
+st.markdown("---")
 
 stress = st.slider("How stressed are you today?", 1, 10)
 
 st.write("Stress Levels: ", stress)
 
-st.markdown("---");
+st.markdown("---")
 
 current_time = dt.datetime.now().strftime("%I:%M %p")
 
@@ -98,7 +95,7 @@ today = dt.date.today()
 if st.button("💾 Save Entry"):
     st.caption("Entries are saved once a day")
     
-    if today in df2["Date"].values:
+    if today in df2["Date"].dt.date.values:
         st.warning("You’ve already logged an entry for today! ✅")
 
     else:
@@ -114,9 +111,12 @@ if st.button("💾 Save Entry"):
 df2 = pd.read_csv(csv_file)
 df2["Date"] = pd.to_datetime(df2["Date"])
 
+data_count = len(df2)
+has_trend = data_count >= 2
+
 df2['day_num'] = range(len(df2))
 
-if len(df2) >= 2:
+if data_count >= 2:
     stress_fit = np.polyfit(df2['day_num'], df2['Stress'],1)
 
     stress_slope = stress_fit[0]
@@ -187,142 +187,157 @@ elif date_filter == "Last 90 Days":
 else:
     chart_data = df2
 
-col1, col2, col3 = st.columns(3)
+if data_count == 0:
+    st.info("Log your first entry to start seeing trends!")
 
-week = df2[df2['Date'] >= (df2['Date'].max() - pd.Timedelta(days=6))]
+else:
+    col1, col2, col3 = st.columns(3)
 
-stress_chart = alt.Chart(chart_data).mark_line(point = True).encode(
-    x = 'Date:T',
+    week = df2[df2['Date'] >= (df2['Date'].max() - pd.Timedelta(days=6))]
+
+    stress_chart = alt.Chart(chart_data).mark_line(point=True).encode(
+    x='Date:T',
     y=alt.Y(
-    'Stress:Q',
-    scale=alt.Scale(domain=[0,15])
-),
-    color = alt.Color('Stress:Q',
-                    scale=alt.Scale(domain=[df2[1,10],
-                                    range=['#ffd6d6','#ff0000'],
-                    legend=None)
+        'Stress:Q',
+        scale=alt.Scale(domain=[0, 15])
+    ),
+    color=alt.Color(
+        'Stress:Q',
+        scale=alt.Scale(
+            domain=[1, 10],
+            range=['#ffd6d6', '#ff0000']
+        ),
+        legend=None
+    )
 ).properties(
     title="Stress"
 )
 
-stress_trend_vis = alt.Chart(chart_data).mark_line().encode(
-    x = 'Date:T',
-    y = alt.Y(
-    'stress_trend:Q',
-    title='Stress',
-    scale=alt.Scale(domain=[0, 15])
-),
-    color = alt.value('#990000')
-)
-
-if has_trend:
-    stress_comb = (stress_chart + stress_trend_vis).resolve_scale(
-        y='shared'
+    stress_trend_vis = alt.Chart(chart_data).mark_line().encode(
+        x = 'Date:T',
+        y = alt.Y(
+        'stress_trend:Q',
+        title='Stress',
+        scale=alt.Scale(domain=[0, 15])
+    ),
+        color = alt.value('#990000')
     )
-    avg_stress_week = week['Stress'].mean()
-    avg_stress_total = df2['Stress'].mean()
+
+    if has_trend:
+        stress_comb = (stress_chart + stress_trend_vis).resolve_scale(
+            y='shared'
+        )
+        avg_stress_week = week['Stress'].mean()
+        avg_stress_total = df2['Stress'].mean()
     
-else:
-    stress_comb = stress_chart
-
-with col1:
-    st.altair_chart(stress_comb, use_container_width=True)
-
-    if avg_stress_week > avg_stress_total:
-        st.info("Stress this week is higher than usual, take some time to relax.")
-    elif avg_stress_week < avg_stress_total:
-        st.success("Stress is decreasing this week, keep doing what you're doing!")
     else:
-        st.info("Stress is constant this week, let's see if we can lower it.")
+        stress_comb = stress_chart
 
+    with col1:
+        st.altair_chart(stress_comb, use_container_width=True)
 
-energy_chart = alt.Chart(chart_data).mark_line(point = True).encode(
-    x = 'Date:T',
-    y=alt.Y(
-    'Energy:Q',
-    scale=alt.Scale(domain=[0,15])
-),
-    color = alt.Color('Energy:Q',
-                    scale=alt.Scale(domain=[df2[1,10],
-                                    range=['#ebe5d5','#ffd59a']),
-                    legend=None)
-).properties(
-    title="Energy"
-)
+        if avg_stress_week > avg_stress_total:
+            st.info("Stress this week is higher than usual, take some time to relax.")
+        elif avg_stress_week < avg_stress_total:
+            st.success("Stress is decreasing this week, keep doing what you're doing!")
+        else:
+            st.info("Stress is constant this week, let's see if we can lower it.")
 
-energy_trend_vis = alt.Chart(chart_data).mark_line().encode(
-    x = 'Date:T',
-    y=alt.Y(
-    'energy_trend:Q',
-    title = 'Energy',
-    scale=alt.Scale(domain=[0,15])
-),
-    color = alt.value('#c28a30')
-)
-
-if has_trend:
-    energy_comb = (energy_chart + energy_trend_vis).resolve_scale(
-        y='shared'
+    energy_chart = alt.Chart(chart_data).mark_line(point = True).encode(
+        x = 'Date:T',
+        y=alt.Y(
+        'Energy:Q',
+        scale=alt.Scale(domain=[0,15])
+    ),
+        color=alt.Color(
+        'Energy:Q',
+        scale=alt.Scale(
+            domain=[1, 10],
+            range=['#ebe5d5', '#ffd59a']
+        ),
+        legend=None
     )
-    avg_energy_week = week['Energy'].mean()
-    avg_energy_total = df2['Energy'].mean()
+    ).properties(
+        title="Energy"
+    )
 
-else:
-    energy_comb = energy_chart
+    energy_trend_vis = alt.Chart(chart_data).mark_line().encode(
+        x = 'Date:T',
+        y=alt.Y(
+        'energy_trend:Q',
+        title = 'Energy',
+        scale=alt.Scale(domain=[0,15])
+    ),
+        color = alt.value('#c28a30')
+    )
 
-with col2:
-    st.altair_chart(energy_comb, use_container_width=True)
+    if has_trend:
+        energy_comb = (energy_chart + energy_trend_vis).resolve_scale(
+            y='shared'
+        )
+        avg_energy_week = week['Energy'].mean()
+        avg_energy_total = df2['Energy'].mean()
 
-    if avg_energy_week > avg_energy_total:
-        st.success("Energy is rocketing this week! See if you can do something productive with it.")
-    elif avg_energy_week < avg_energy_total:
-        st.info("Feeling a bit weary this week? That's alright, take a break and recharge.")
     else:
-        st.info("Energy is staying stagnant, make sure you don't overdo it!")
+        energy_comb = energy_chart
 
+    with col2:
+        st.altair_chart(energy_comb, use_container_width=True)
 
-focus_chart = alt.Chart(chart_data).mark_line(point = True).encode(
-    x = 'Date:T',
-    y=alt.Y(
-    'Focus:Q',
-    scale=alt.Scale(domain=[0,15])
-),
-    color = alt.Color('Focus:Q',
-                    scale=alt.Scale(domain=[1,10],
-                                    range=['#f9e076','#fa8128'],
-                    legend=None)
-).properties(
-    title="Focus"
-)
+        if avg_energy_week > avg_energy_total:
+            st.success("Energy is rocketing this week! See if you can do something productive with it.")
+        elif avg_energy_week < avg_energy_total:
+            st.info("Feeling a bit weary this week? That's alright, take a break and recharge.")
+        else:
+            st.info("Energy is staying stagnant, make sure you don't overdo it!")
 
-focus_trend_vis = alt.Chart(chart_data).mark_line().encode(
-    x = 'Date:T',
-    y=alt.Y(
-    'focus_trend:Q',
-    title = 'Focus',
-    scale=alt.Scale(domain=[0,15])
-),
-    color = alt.value('#c95f00')
-)
-
-if has_trend: 
-    focus_comb = (focus_chart + focus_trend_vis).resolve_scale(
-        y='shared'
+    focus_chart = alt.Chart(chart_data).mark_line(point = True).encode(
+        x = 'Date:T',
+        y=alt.Y(
+        'Focus:Q',
+        scale=alt.Scale(domain=[0,15])
+    ),
+        color=alt.Color(
+        'Focus:Q',
+        scale=alt.Scale(
+            domain=[1, 10],
+            range=['#f9e076', '#fa8128']
+        ),
+        legend=None
     )
-    avg_focus_week = week['Focus'].mean()
-    avg_focus_total = df2['Focus'].mean()
+    ).properties(
+        title="Focus"
+    )
 
-focus_comb = focus_chart
+    focus_trend_vis = alt.Chart(chart_data).mark_line().encode(
+        x = 'Date:T',
+        y=alt.Y(
+        'focus_trend:Q',
+        title = 'Focus',
+        scale=alt.Scale(domain=[0,15])
+    ),
+        color = alt.value('#c95f00')
+    )
 
-with col3:
-    st.altair_chart(focus_comb, use_container_width=True)
+    if has_trend: 
+        focus_comb = (focus_chart + focus_trend_vis).resolve_scale(
+            y='shared'
+        )
+        avg_focus_week = week['Focus'].mean()
+        avg_focus_total = df2['Focus'].mean()
+
+    else:
+        focus_comb = focus_chart
+
+    with col3:
+        st.altair_chart(focus_comb, use_container_width=True)
     
-    if avg_focus_week > avg_focus_total:
-        st.success("Focus is high for this week! Why don't we work on a to-do list? Get some studying down?")
-    elif avg_focus_week < avg_focus_total:
-        st.info("Focus is down for now, clear your mind and try some relaxing exercises.")
-    else:
-        st.info("Focus is steady this week, try not to fall behind on any work !")
+        if avg_focus_week > avg_focus_total:
+            st.success("Focus is high for this week! Why don't we work on a to-do list? Get some studying down?")
+        elif avg_focus_week < avg_focus_total:
+            st.info("Focus is down for now, clear your mind and try some relaxing exercises.")
+        else:
+            st.info("Focus is steady this week, try not to fall behind on any work !")
 
 st.markdown("---")
 
@@ -333,7 +348,7 @@ with raw:
         st.dataframe(df2)
 
 with weekly:
-    if st.button("📊 Generate Weekly Report"):
+    if st.button("📊 Generate Weekly Report") and has_trend:
         st.write("Weekly Report")
         
         avg_focus = week['Focus'].mean()
@@ -389,6 +404,9 @@ with weekly:
 
         else:
             st.warning("This week appears to have been more challenging than usual. Focus and energy were lower while stress was higher than your typical averages. Next week is a fresh start.")
+
+    else:
+        st.info("Log at least two entries to generate a weekly report.")
 
 with download:
     csv_data = df2.to_csv(index=False)
