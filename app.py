@@ -199,7 +199,7 @@ stress_chart = alt.Chart(chart_data).mark_line(point = True).encode(
 ),
     color = alt.Color('Stress:Q',
                     scale=alt.Scale(domain=[df2[1,10],
-                                    range=['#ffd6d6','#ff0000']),
+                                    range=['#ffd6d6','#ff0000'],
                     legend=None)
 ).properties(
     title="Stress"
@@ -222,8 +222,11 @@ if has_trend:
     avg_stress_week = week['Stress'].mean()
     avg_stress_total = df2['Stress'].mean()
     
-    with col1:
-        st.altair_chart(stress_comb, use_container_width=True)
+else:
+    stress_comb = stress_chart
+
+with col1:
+    st.altair_chart(stress_comb, use_container_width=True)
 
     if avg_stress_week > avg_stress_total:
         st.info("Stress this week is higher than usual, take some time to relax.")
@@ -264,9 +267,11 @@ if has_trend:
     avg_energy_week = week['Energy'].mean()
     avg_energy_total = df2['Energy'].mean()
 
+else:
+    energy_comb = energy_chart
 
-    with col2:
-        st.altair_chart(energy_comb, use_container_width=True)
+with col2:
+    st.altair_chart(energy_comb, use_container_width=True)
 
     if avg_energy_week > avg_energy_total:
         st.success("Energy is rocketing this week! See if you can do something productive with it.")
@@ -284,7 +289,7 @@ focus_chart = alt.Chart(chart_data).mark_line(point = True).encode(
 ),
     color = alt.Color('Focus:Q',
                     scale=alt.Scale(domain=[1,10],
-                                    range=['#f9e076','#fa8128']),
+                                    range=['#f9e076','#fa8128'],
                     legend=None)
 ).properties(
     title="Focus"
@@ -307,9 +312,10 @@ if has_trend:
     avg_focus_week = week['Focus'].mean()
     avg_focus_total = df2['Focus'].mean()
 
+focus_comb = focus_chart
 
-    with col3:
-        st.altair_chart(focus_comb, use_container_width=True)
+with col3:
+    st.altair_chart(focus_comb, use_container_width=True)
     
     if avg_focus_week > avg_focus_total:
         st.success("Focus is high for this week! Why don't we work on a to-do list? Get some studying down?")
