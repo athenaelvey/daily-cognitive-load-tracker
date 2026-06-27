@@ -113,26 +113,27 @@ df2["Date"] = pd.to_datetime(df2["Date"])
 
 df2['day_num'] = range(len(df2))
 
-stress_fit = np.polyfit(df2['day_num'], df2['Stress'],1)
+if len(df2) >= 2:
+    stress_fit = np.polyfit(df2['day_num'], df2['Stress'],1)
 
-stress_slope = stress_fit[0]
-stress_intercept = stress_fit[1]
+    stress_slope = stress_fit[0]
+    stress_intercept = stress_fit[1]
 
-df2['stress_trend'] = stress_slope * df2['day_num'] + stress_intercept
+    df2['stress_trend'] = stress_slope * df2['day_num'] + stress_intercept
 
-energy_fit = np.polyfit(df2['day_num'], df2['Energy'],1)
+    energy_fit = np.polyfit(df2['day_num'], df2['Energy'],1)
 
-energy_slope = energy_fit[0]
-energy_intercept = energy_fit[1]
+    energy_slope = energy_fit[0]
+    energy_intercept = energy_fit[1]
 
-df2['energy_trend'] = energy_slope * df2['day_num'] + energy_intercept
+    df2['energy_trend'] = energy_slope * df2['day_num'] + energy_intercept
 
-focus_fit = np.polyfit(df2['day_num'], df2['Focus'], 1)
+    focus_fit = np.polyfit(df2['day_num'], df2['Focus'], 1)
 
-focus_slope = focus_fit[0]
-focus_intercept = focus_fit[1]
+    focus_slope = focus_fit[0]
+    focus_intercept = focus_fit[1]
 
-df2['focus_trend'] = focus_slope * df2['day_num'] + focus_intercept
+    df2['focus_trend'] = focus_slope * df2['day_num'] + focus_intercept
 
 df2 = df2.drop_duplicates(subset=["Date"], keep="first")
 
