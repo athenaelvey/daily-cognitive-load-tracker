@@ -5,6 +5,7 @@ __pycache__/
 
 # Local data files (your app)
 daily_log.csv
+backups/
 
 # Environments
 .venv/
