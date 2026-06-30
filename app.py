@@ -243,8 +243,8 @@ else:
                 st.success("Stress is decreasing this week, keep doing what you're doing!")
             else:
                 st.info("Stress is constant this week, let's see if we can lower it.")
-    else:
-        st.info("Log at least 2 entries to see weekly comparisons.")
+        else:
+            st.info("Log at least 2 entries to see weekly comparisons.")
 
     energy_chart = alt.Chart(chart_data).mark_line(point = True).encode(
         x = 'Date:T',
