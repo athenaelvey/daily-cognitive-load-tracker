@@ -3,6 +3,10 @@ A Streamlit-based cognitive wellness tracker designed to analyze focus, stress, 
 
 ---
 
+## Live Demo
+
+https://daily-cognitive-load-tracker.streamlit.app/
+
 ## Features
 
 - Daily logging of stress, energy, and focus levels  
@@ -10,17 +14,17 @@ A Streamlit-based cognitive wellness tracker designed to analyze focus, stress, 
 - One entry per day validation to prevent duplicates  
 - Persistent data storage using a local CSV file  
 - Interactive line charts for visualizing each metric  
-- Trend visualization across days  
+- Linear trend lines generated using NumPy regression
 - Optional raw data viewer for transparency  
 - Streak tracking for consistent daily logging
-- Alert system for unusual patterns 
+- Alert system for uncommon patterns 
 - Adaptive warning and encouraging messages
 
 ---
 
 ## Tech Stack
 
-- Python  
+- Python
 - Streamlit  
 - Pandas  
 - Altair  
@@ -47,7 +51,6 @@ A Streamlit-based cognitive wellness tracker designed to analyze focus, stress, 
 
 ## Future Improvements
   
-- Expand analytics with correlations between metrics  
-- Add data export options (CSV / PDF reports)  
-- Improve UI layout and visual design consistency  
-- Deploy the app for public access via Streamlit Cloud  
+- User authentication
+- Mood tracking 
+- Mobile optimization
