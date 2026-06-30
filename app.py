@@ -346,7 +346,7 @@ else:
             else:
                 st.info("Focus is steady this week, try not to fall behind on any work !")
         else:
-            st.info("Log at least 2 entries to see weekly comparisons."
+            st.info("Log at least 2 entries to see weekly comparisons.")
 
 st.markdown("---")
 
