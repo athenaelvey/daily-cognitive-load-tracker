@@ -236,12 +236,15 @@ else:
     with col1:
         st.altair_chart(stress_comb, use_container_width=True)
 
-        if avg_stress_week > avg_stress_total:
-            st.info("Stress this week is higher than usual, take some time to relax.")
-        elif avg_stress_week < avg_stress_total:
-            st.success("Stress is decreasing this week, keep doing what you're doing!")
-        else:
-            st.info("Stress is constant this week, let's see if we can lower it.")
+        if has_trend:
+            if avg_stress_week > avg_stress_total:
+                st.info("Stress this week is higher than usual, take some time to relax.")
+            elif avg_stress_week < avg_stress_total:
+                st.success("Stress is decreasing this week, keep doing what you're doing!")
+            else:
+                st.info("Stress is constant this week, let's see if we can lower it.")
+    else:
+        st.info("Log at least 2 entries to see weekly comparisons.")
 
     energy_chart = alt.Chart(chart_data).mark_line(point = True).encode(
         x = 'Date:T',
@@ -284,12 +287,15 @@ else:
     with col2:
         st.altair_chart(energy_comb, use_container_width=True)
 
-        if avg_energy_week > avg_energy_total:
-            st.success("Energy is rocketing this week! See if you can do something productive with it.")
-        elif avg_energy_week < avg_energy_total:
-            st.info("Feeling a bit weary this week? That's alright, take a break and recharge.")
+        if has_trend:
+            if avg_energy_week > avg_energy_total:
+                st.success("Energy is rocketing this week! See if you can do something productive with it.")
+            elif avg_energy_week < avg_energy_total:
+                st.info("Feeling a bit weary this week? That's alright, take a break and recharge.")
+            else:
+                st.info("Energy is staying stagnant, make sure you don't overdo it!")
         else:
-            st.info("Energy is staying stagnant, make sure you don't overdo it!")
+            st.info("Log at least 2 entries to see weekly comparisons.")
 
     focus_chart = alt.Chart(chart_data).mark_line(point = True).encode(
         x = 'Date:T',
@@ -332,12 +338,15 @@ else:
     with col3:
         st.altair_chart(focus_comb, use_container_width=True)
     
-        if avg_focus_week > avg_focus_total:
-            st.success("Focus is high for this week! Why don't we work on a to-do list? Get some studying down?")
-        elif avg_focus_week < avg_focus_total:
-            st.info("Focus is down for now, clear your mind and try some relaxing exercises.")
+        if has_trend:
+            if avg_focus_week > avg_focus_total:
+                st.success("Focus is high for this week! Why don't we work on a to-do list? Get some studying down?")
+            elif avg_focus_week < avg_focus_total:
+                st.info("Focus is down for now, clear your mind and try some relaxing exercises.")
+            else:
+                st.info("Focus is steady this week, try not to fall behind on any work !")
         else:
-            st.info("Focus is steady this week, try not to fall behind on any work !")
+            st.info("Log at least 2 entries to see weekly comparisons."
 
 st.markdown("---")
 
