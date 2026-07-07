@@ -417,7 +417,8 @@ with weekly:
                 st.warning("This week appears to have been more challenging than usual. Focus and energy were lower while stress was higher than your typical averages. Next week is a fresh start.")
 
     else:
-        st.info("Log at least two entries to generate a weekly report.")
+        if data_count < 2:
+            st.info("Log at least two entries to generate a weekly report.")
 
 with download:
     csv_data = df2.to_csv(index=False)
